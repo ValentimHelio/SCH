@@ -14,5 +14,10 @@ namespace SCH.Repositories
         }
 
         public IEnumerable<Empresa> GetEmpresas => _context.Empresas;
+
+        public Empresa GetEmpresaById(int id)
+        {
+            return _context.Empresas.FirstOrDefault(l => l.EmpresaId == id);
+        }
     }
 }
