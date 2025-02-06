@@ -46,7 +46,5 @@ namespace SCH.Repositories
                 await _context.SaveChangesAsync();
             }
         }
-
-
     }
 }

@@ -1,10 +1,17 @@
 using Microsoft.EntityFrameworkCore;
 using SCH.Context;
+using SCH.Repositories;
+using SCH.Repositories.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connection));
+
+builder.Services.AddTransient<IClienteRepository, ClienteRepository>();
+builder.Services.AddTransient<IEmpresaRepository, EmpresaRepository>();
+builder.Services.AddTransient<IMovimentoRepository, MovimentoRepository>();
+builder.Services.AddTransient<IServicoRepository, ServicoRepository>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

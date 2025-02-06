@@ -12,7 +12,7 @@ namespace SCH.Models
 
         [Required(ErrorMessage = "O nome do cliente deve ser informado")]
         [StringLength(100, MinimumLength = 1, ErrorMessage = "O {0} deve ter no mínimo {1} e no máximo {2} caracteres")]
-        [Display(Name = "Cliente")]
+        [Display(Name = "Nome do Cliente")]
         public string NomeCliente { get; set; }
 
         [Required(ErrorMessage = "Informe o endereço")]
@@ -27,7 +27,7 @@ namespace SCH.Models
 
         [Required(ErrorMessage = "Informe a sigla do estado")]
         [StringLength(2)]
-        [Display(Name = "Uf")]
+        [Display(Name = "Estado")]
         public string Uf { get; set; }
 
         [Required(ErrorMessage = "Informe o CEP")]

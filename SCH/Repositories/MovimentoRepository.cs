@@ -4,10 +4,10 @@ using SCH.Repositories.Interfaces;
 
 namespace SCH.Repositories
 {
-    public class ClienteRepository : Repository<Cliente>, IClienteRepository
+    public class MovimentoRepository : Repository<Movimento>, IMovimentoRepository
     {
         private readonly AppDbContext _context;
 
-        public ClienteRepository(AppDbContext context) : base(context) { }
+        public MovimentoRepository(AppDbContext context) : base(context) { }
     }
 }

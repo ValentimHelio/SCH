@@ -13,11 +13,13 @@ namespace SCH.Models
         [Required(ErrorMessage = "O Cliente deve ser informado")]
         [Display(Name = "Cliente")]
         public int ClienteId { get; set; }
+        [Display(Name = "Cliente")]
         public virtual Cliente cliente { get; set; }
 
         [Required(ErrorMessage = "O Serviço deve ser informado")]
         [Display(Name = "Serviço")]
         public int ServicoId { get; set; }
+        [Display(Name = "Serviço")]
         public virtual Servico servico{ get; set; }
 
         [Display(Name = "Data")]
