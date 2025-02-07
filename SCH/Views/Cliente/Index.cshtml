@@ -1,4 +1,5 @@
-﻿@model IEnumerable<SCH.Models.Cliente>
+﻿@* @model IEnumerable<SCH.Models.Cliente> *@
+@model ReflectionIT.Mvc.Paging.PagingList<SCH.Models.Cliente>
 
 @{
     ViewData["Title"] = "Lista de Clientes";
@@ -6,8 +7,24 @@
 
 <h1>Lista de Clientes</h1>
 
+<form method="get" class="form-control-lg ">
+    <div class="form-row align-items-center">
+        <div class="col-sm-10 my-1">
+            <input name="filter" class="form-control" placeholder="filtro" value="@Model.RouteValue["Filter"]" />
+        </div>
+        <div class="col-auto my-1">
+            <button type="submit" class="btn btn-info"> Procurar</button>
+        </div>
+    </div>
+</form>
+
+Total de Cliente(s) : @Model.TotalRecordCount
+<div>
+    <vc:pager paging-list="@Model"></vc:pager>
+</div>
+
 <p>
-    <a asp-action="Create">Cadastar Novo Cliente</a>
+    <a asp-action="Create" class="btn btn-outline-info">Cadastar Novo Cliente</a>
 </p>
 <div class="container mt-3">
     <table class="table table-striped">
@@ -69,9 +86,9 @@
                         @Html.DisplayFor(modelItem => item.Cpf)
                     </td>
                     <td>
-                        <a asp-action="Edit" asp-route-id="@item.ClienteId">Editar</a> |
-                        <a asp-action="Details" asp-route-id="@item.ClienteId">Detalhes</a> |
-                        <a asp-action="Delete" asp-route-id="@item.ClienteId">Excluir</a>
+                        <a asp-action="Edit" class="btn btn-outline-primary" asp-route-id="@item.ClienteId">Editar</a>
+                        <a asp-action="Details" class="btn btn-outline-secondary" asp-route-id="@item.ClienteId">Detalhes</a>
+                        <a asp-action="Delete" class="btn btn-outline-danger" asp-route-id="@item.ClienteId">Excluir</a>
                     </td>
                 </tr>
             }

@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ReflectionIT.Mvc.Paging;
+using SCH.Context;
 using SCH.Models;
 using SCH.Repositories.Interfaces;
 
@@ -8,15 +10,30 @@ namespace SCH.Controllers
     {
         private readonly IClienteRepository _clienteRepository;
 
-        public ClienteController(IClienteRepository clienteRepository)
+        private readonly AppDbContext _context;
+
+        public ClienteController(IClienteRepository clienteRepository, AppDbContext context)
         {
             _clienteRepository = clienteRepository;
+            _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string filter, int pageindex = 1, string sort = "NomeCliente")
         {
-            var produtos = await _clienteRepository.GetAllAsync();
-            return View(produtos);
+            var resultado = _context.Clientes.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(filter))
+            {
+                resultado = resultado.Where(p => p.NomeCliente.Contains(filter));
+            }
+
+            var model = await PagingList.CreateAsync(resultado, 5, pageindex, sort, "NomeCliente");
+            model.RouteValue = new RouteValueDictionary { { "filter", filter } };
+            return View(model);
+
+
+            //var produtos = await _clienteRepository.GetAllAsync();
+            //return View(produtos);
         }
 
         public IActionResult Create()

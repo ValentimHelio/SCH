@@ -42,7 +42,7 @@ namespace SCH.Models
 
         [Required(ErrorMessage = "Informe o Cpf")]
         [StringLength(14)]
-        [Display(Name = "Cpf")]
+        [Display(Name = "CGC/CPF")]
         public string Cpf { get; set; }
 
     }
