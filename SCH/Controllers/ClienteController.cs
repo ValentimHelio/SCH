@@ -8,9 +8,8 @@ namespace SCH.Controllers
 {
     public class ClienteController : Controller
     {
-        private readonly IClienteRepository _clienteRepository;
-
         private readonly AppDbContext _context;
+        private readonly IClienteRepository _clienteRepository;
 
         public ClienteController(IClienteRepository clienteRepository, AppDbContext context)
         {
@@ -27,13 +26,10 @@ namespace SCH.Controllers
                 resultado = resultado.Where(p => p.NomeCliente.Contains(filter));
             }
 
-            var model = await PagingList.CreateAsync(resultado, 5, pageindex, sort, "NomeCliente");
+            var model = await PagingList.CreateAsync(resultado, 10, pageindex, sort, "NomeCliente");
             model.RouteValue = new RouteValueDictionary { { "filter", filter } };
             return View(model);
 
-
-            //var produtos = await _clienteRepository.GetAllAsync();
-            //return View(produtos);
         }
 
         public IActionResult Create()
