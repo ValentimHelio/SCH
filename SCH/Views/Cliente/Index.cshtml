@@ -5,13 +5,13 @@
     ViewData["Title"] = "Lista de Clientes";
 }
 
-<h1>Lista de Clientes</h1>
+<h1>Lista de Cliente(s)</h1>
 
 <form method="get" class="form-inline">
     <div class="form-row align-items-center">
         <div class="row">
             <div class="col-sm-10 ">
-                <input name="filter" class="form-control" placeholder="filtro" value="@Model.RouteValue["Filter"]" />
+                <input name="filter" class="form-control" placeholder="Pesquisar pelo nome do Cliente" value="@Model.RouteValue["Filter"]" />
             </div>
             <div class="col-auto">
                 <button type="submit" class="btn btn-info"> Procurar</button>
@@ -28,9 +28,9 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>
+               @*  <th>
                     @Html.DisplayNameFor(model => model.ClienteId)
-                </th>
+                </th> *@
                 <th>
                     @Html.DisplayNameFor(model => model.NomeCliente)
                 </th>
@@ -59,9 +59,9 @@
             @foreach (var item in Model)
             {
                 <tr>
-                    <td>
+                   @*  <td>
                         @Html.DisplayFor(modelItem => item.ClienteId)
-                    </td>
+                    </td> *@
                     <td>
                         @Html.DisplayFor(modelItem => item.NomeCliente)
                     </td>

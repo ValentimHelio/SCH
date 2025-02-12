@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ReflectionIT.Mvc.Paging;
+using SCH.Context;
 using SCH.Models;
 using SCH.Repositories;
 using SCH.Repositories.Interfaces;
@@ -7,17 +9,34 @@ namespace SCH.Controllers
 {
     public class EmpresaController : Controller
     {
+        private readonly AppDbContext _context;
         private readonly IEmpresaRepository _empresaRepository;
 
-        public EmpresaController(IEmpresaRepository EmpresaRepository)
+        public EmpresaController(IEmpresaRepository EmpresaRepository, AppDbContext context)
         {
+            _context = context;
             _empresaRepository = EmpresaRepository;
         }
 
-        public async Task<IActionResult> Index()
+        //public async Task<IActionResult> Index()
+        //{
+        //    var produtos = await _empresaRepository.GetAllAsync();
+        //    return View(produtos);
+        //}
+
+        public async Task<IActionResult> Index(string filter, int pageindex = 1, string sort = "NomeEmpresa")
         {
-            var produtos = await _empresaRepository.GetAllAsync();
-            return View(produtos);
+            var resultado = _context.Empresas.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(filter))
+            {
+                resultado = resultado.Where(p => p.NomeEmpresa.Contains(filter));
+            }
+
+            var model = await PagingList.CreateAsync(resultado, 10, pageindex, sort, "NomeEmpresa");
+            model.RouteValue = new RouteValueDictionary { { "filter", filter } };
+            return View(model);
+
         }
 
         public IActionResult Create()

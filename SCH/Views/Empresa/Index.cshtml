@@ -1,71 +1,94 @@
-﻿@model IEnumerable<SCH.Models.Empresa>
+﻿@* @model IEnumerable<SCH.Models.Empresa> *@
+@model ReflectionIT.Mvc.Paging.PagingList<SCH.Models.Empresa>
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Lista de Empresa(s)</h1>
 
+<form method="get" class="form-inline">
+    <div class="form-row align-items-center">
+        <div class="row">
+            <div class="col-sm-10 ">
+                <input name="filter" class="form-control" placeholder="Pesquisar pelo nome da Empresa" value="@Model.RouteValue["Filter"]" />
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-info"> Procurar</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<br>
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-outline-info">Cadastar Nova Empresa</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.NomeEmpresa)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Endereco)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Cidade)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Uf)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Cep)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Fone)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Cpf)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.NomeEmpresa)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Endereco)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Cidade)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Uf)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Cep)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Fone)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Cpf)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.EmpresaId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.EmpresaId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.EmpresaId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="container mt-3">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.NomeEmpresa)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Endereco)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Cidade)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Uf)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Cep)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Fone)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Cpf)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NomeEmpresa)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Endereco)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Cidade)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Uf)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Cep)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Fone)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Cpf)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" class="btn btn-outline-primary" asp-route-id="@item.EmpresaId">Editar</a>
+                        <a asp-action="Details" class="btn btn-outline-secondary" asp-route-id="@item.EmpresaId">Detalhes</a>
+                        <a asp-action="Delete" class="btn btn-outline-danger" asp-route-id="@item.EmpresaId">Excluir</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    Total de Empresa(s) : @Model.TotalRecordCount
+    <div>
+        <vc:pager paging-list="@Model"></vc:pager>
+    </div>
+</div>
