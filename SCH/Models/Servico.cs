@@ -23,6 +23,7 @@ namespace SCH.Models
         [Required(ErrorMessage = "A Empresa deve ser informado")]
         [Display(Name = "Empresa")]
         public int EmpresaId { get; set; }
+        [Display(Name = "Empresa")]
         public virtual Empresa empresa { get; set; }
     }
 }

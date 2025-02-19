@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using ReflectionIT.Mvc.Paging;
 using SCH.Context;
 using SCH.Repositories;
 using SCH.Repositories.Interfaces;
@@ -15,6 +16,12 @@ builder.Services.AddTransient<IServicoRepository, ServicoRepository>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddPaging(options =>
+{
+    options.ViewName = "Bootstrap4";
+    options.PageParameterName = "pageindex";
+});
 
 var app = builder.Build();
 
