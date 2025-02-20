@@ -5,5 +5,6 @@ namespace SCH.Repositories.Interfaces
 {
     public interface IMovimentoRepository : IRepository<Movimento>
     {
+        Task<Movimento> GetMovimentoById(int id);
     }
 }

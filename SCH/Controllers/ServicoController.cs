@@ -21,7 +21,6 @@ namespace SCH.Controllers
 
         public async Task<IActionResult> Index(string filter, int pageindex = 1, string sort = "Descricao")
         {
-            //var teste = _servicoRepository.GetAllServico();
             var resultado = _context.Servicos.Include(e => e.empresa).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(filter))
@@ -29,7 +28,7 @@ namespace SCH.Controllers
                 resultado = resultado.Where(p => p.Descricao.Contains(filter));
             }
 
-            var model = await PagingList.CreateAsync(resultado, 5, pageindex, sort, "Descricao");
+            var model = await PagingList.CreateAsync(resultado, 10, pageindex, sort, "Descricao");
             model.RouteValue = new RouteValueDictionary { { "filter", filter } };
             return View(model);
 
@@ -55,9 +54,9 @@ namespace SCH.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             ViewBag.EmpresaId = new SelectList(_context.Empresas, "EmpresaId", "NomeEmpresa");
-            var produto = await _servicoRepository.GetByIdAsync(id);
-            if (produto == null) return NotFound();
-            return View(produto);
+            var servico = await _servicoRepository.GetByIdAsync(id);
+            if (servico == null) return NotFound();
+            return View(servico);
         }
 
         [HttpPost]

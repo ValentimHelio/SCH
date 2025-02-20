@@ -2,7 +2,6 @@
 using ReflectionIT.Mvc.Paging;
 using SCH.Context;
 using SCH.Models;
-using SCH.Repositories;
 using SCH.Repositories.Interfaces;
 
 namespace SCH.Controllers
@@ -18,12 +17,6 @@ namespace SCH.Controllers
             _empresaRepository = EmpresaRepository;
         }
 
-        //public async Task<IActionResult> Index()
-        //{
-        //    var produtos = await _empresaRepository.GetAllAsync();
-        //    return View(produtos);
-        //}
-
         public async Task<IActionResult> Index(string filter, int pageindex = 1, string sort = "NomeEmpresa")
         {
             var resultado = _context.Empresas.AsQueryable();
@@ -36,7 +29,6 @@ namespace SCH.Controllers
             var model = await PagingList.CreateAsync(resultado, 10, pageindex, sort, "NomeEmpresa");
             model.RouteValue = new RouteValueDictionary { { "filter", filter } };
             return View(model);
-
         }
 
         public IActionResult Create()
@@ -75,16 +67,16 @@ namespace SCH.Controllers
 
         public async Task<IActionResult> Details(int id)
         {
-            var produto = await _empresaRepository.GetByIdAsync(id);
-            if (produto == null) return NotFound();
-            return View(produto);
+            var result = await _empresaRepository.GetByIdAsync(id);
+            if (result == null) return NotFound();
+            return View(result);
         }
 
         public async Task<IActionResult> Delete(int id)
         {
-            var produto = await _empresaRepository.GetByIdAsync(id);
-            if (produto == null) return NotFound();
-            return View(produto);
+            var result = await _empresaRepository.GetByIdAsync(id);
+            if (result == null) return NotFound();
+            return View(result);
         }
 
         [HttpPost, ActionName("Delete")]
