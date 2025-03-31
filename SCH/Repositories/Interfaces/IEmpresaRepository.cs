@@ -1,9 +1,8 @@
 ﻿using SCH.Models;
 using static SCH.Repositories.Interfaces.IRepository;
 
-namespace SCH.Repositories.Interfaces
+namespace SCH.Repositories.Interfaces;
+
+public interface IEmpresaRepository : IRepository<Empresa>
 {
-    public interface IEmpresaRepository : IRepository<Empresa>
-    {
-    }
 }

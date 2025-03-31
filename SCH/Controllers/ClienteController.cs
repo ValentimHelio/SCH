@@ -10,11 +10,13 @@ namespace SCH.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IClienteRepository _clienteRepository;
+        private readonly IUnitOfWork _iof;
 
-        public ClienteController(IClienteRepository clienteRepository, AppDbContext context)
+        public ClienteController(AppDbContext context, IClienteRepository clienteRepository, IUnitOfWork iof)
         {
-            _clienteRepository = clienteRepository;
             _context = context;
+            _clienteRepository = clienteRepository;
+            _iof = iof;
         }
 
         public async Task<IActionResult> Index(string filter, int pageindex = 1, string sort = "NomeCliente")
@@ -42,7 +44,8 @@ namespace SCH.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _clienteRepository.AddAsync(cliente);
+                await _iof.clienteRepository.AddAsync(cliente);
+                _iof.CommitAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(cliente);
@@ -60,7 +63,8 @@ namespace SCH.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _clienteRepository.UpdateAsync(cliente);
+                await _iof.clienteRepository.UpdateAsync(cliente);
+                _iof.CommitAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(cliente);
@@ -68,14 +72,14 @@ namespace SCH.Controllers
 
         public async Task<IActionResult> Details(int id)
         {
-            var produto = await _clienteRepository.GetByIdAsync(id);
+            var produto = await _iof.clienteRepository.GetByIdAsync(id);
             if (produto == null) return NotFound();
             return View(produto);
         }
 
         public async Task<IActionResult> Delete(int id)
         {
-            var produto = await _clienteRepository.GetByIdAsync(id);
+            var produto = await _iof.clienteRepository.GetByIdAsync(id);
             if (produto == null) return NotFound();
             return View(produto);
         }
@@ -83,7 +87,8 @@ namespace SCH.Controllers
         [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _clienteRepository.DeleteAsync(id);
+            await _iof.clienteRepository.DeleteAsync(id);
+            _iof.CommitAsync();
             return RedirectToAction(nameof(Index));
         }
     }
