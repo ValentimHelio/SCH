@@ -1,95 +1,79 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ReflectionIT.Mvc.Paging;
-using SCH.Context;
 using SCH.Models;
 using SCH.Repositories.Interfaces;
 
-namespace SCH.Controllers
+namespace SCH.Controllers;
+
+public class ClienteController : Controller
 {
-    public class ClienteController : Controller
+    private readonly IUnitOfWork _repository;
+
+    public ClienteController(IUnitOfWork repository)
     {
-        private readonly AppDbContext _context;
-        private readonly IClienteRepository _clienteRepository;
-        private readonly IUnitOfWork _iof;
+        _repository = repository;
+    }
 
-        public ClienteController(AppDbContext context, IClienteRepository clienteRepository, IUnitOfWork iof)
+    public async Task<ActionResult> Index(string filter, int pageindex = 1, string sort = "NomeCliente")
+    {
+        var result = await _repository.clienteRepository.GetClientePagindo(filter, pageindex, sort);
+        return View(result);
+    }
+
+    public ActionResult Create()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    public ActionResult Create(Cliente cliente)
+    {
+        if (ModelState.IsValid)
         {
-            _context = context;
-            _clienteRepository = clienteRepository;
-            _iof = iof;
-        }
-
-        public async Task<IActionResult> Index(string filter, int pageindex = 1, string sort = "NomeCliente")
-        {
-            var resultado = _context.Clientes.AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(filter))
-            {
-                resultado = resultado.Where(p => p.NomeCliente.Contains(filter));
-            }
-
-            var model = await PagingList.CreateAsync(resultado, 10, pageindex, sort, "NomeCliente");
-            model.RouteValue = new RouteValueDictionary { { "filter", filter } };
-            return View(model);
-
-        }
-
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Create(Cliente cliente)
-        {
-            if (ModelState.IsValid)
-            {
-                await _iof.clienteRepository.AddAsync(cliente);
-                _iof.CommitAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(cliente);
-        }
-
-        public async Task<IActionResult> Edit(int id)
-        {
-            var produto = await _clienteRepository.GetByIdAsync(id);
-            if (produto == null) return NotFound();
-            return View(produto);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Edit(Cliente cliente)
-        {
-            if (ModelState.IsValid)
-            {
-                await _iof.clienteRepository.UpdateAsync(cliente);
-                _iof.CommitAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(cliente);
-        }
-
-        public async Task<IActionResult> Details(int id)
-        {
-            var produto = await _iof.clienteRepository.GetByIdAsync(id);
-            if (produto == null) return NotFound();
-            return View(produto);
-        }
-
-        public async Task<IActionResult> Delete(int id)
-        {
-            var produto = await _iof.clienteRepository.GetByIdAsync(id);
-            if (produto == null) return NotFound();
-            return View(produto);
-        }
-
-        [HttpPost, ActionName("Delete")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            await _iof.clienteRepository.DeleteAsync(id);
-            _iof.CommitAsync();
+            _repository.clienteRepository.Add(cliente);
+            _repository.Commit();
             return RedirectToAction(nameof(Index));
         }
+        return View(cliente);
+    }
+
+    public async Task<ActionResult> Edit(int id)
+    {
+        var produto = await _repository.clienteRepository.GetByIdAsync(id);
+        if (produto == null) return NotFound();
+        return View(produto);
+    }
+
+    [HttpPost]
+    public ActionResult Edit(Cliente cliente)
+    {
+        if (ModelState.IsValid)
+        {
+            _repository.clienteRepository.Update(cliente);
+            _repository.Commit();
+            return RedirectToAction(nameof(Index));
+        }
+        return View(cliente);
+    }
+
+    public async Task<ActionResult> Details(int id)
+    {
+        var produto = await _repository.clienteRepository.GetByIdAsync(id);
+        if (produto == null) return NotFound();
+        return View(produto);
+    }
+
+    public async Task<ActionResult> Delete(int id)
+    {
+        var produto = await _repository.clienteRepository.GetByIdAsync(id);
+        if (produto == null) return NotFound();
+        return View(produto);
+    }
+
+    [HttpPost, ActionName("Delete")]
+    public ActionResult DeleteConfirmed(int id)
+    {
+        _repository.clienteRepository.Delete(id);
+        _repository.Commit();
+        return RedirectToAction(nameof(Index));
     }
 }

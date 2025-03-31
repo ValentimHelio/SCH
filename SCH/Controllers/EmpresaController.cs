@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ReflectionIT.Mvc.Paging;
-using SCH.Context;
 using SCH.Models;
 using SCH.Repositories.Interfaces;
 
@@ -8,81 +6,73 @@ namespace SCH.Controllers
 {
     public class EmpresaController : Controller
     {
-        private readonly AppDbContext _context;
-        private readonly IEmpresaRepository _empresaRepository;
-
-        public EmpresaController(IEmpresaRepository EmpresaRepository, AppDbContext context)
+        private readonly IUnitOfWork _repository;
+        public EmpresaController(IUnitOfWork repository)
         {
-            _context = context;
-            _empresaRepository = EmpresaRepository;
+            _repository = repository;
         }
 
-        public async Task<IActionResult> Index(string filter, int pageindex = 1, string sort = "NomeEmpresa")
+        public async Task<ActionResult> Index(string filter, int pageindex = 1, string sort = "NomeEmpresa")
         {
-            var resultado = _context.Empresas.AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(filter))
-            {
-                resultado = resultado.Where(p => p.NomeEmpresa.Contains(filter));
-            }
-
-            var model = await PagingList.CreateAsync(resultado, 10, pageindex, sort, "NomeEmpresa");
-            model.RouteValue = new RouteValueDictionary { { "filter", filter } };
-            return View(model);
+            var result = await _repository.empresaRepository.GetEmpresaPagindo(filter, pageindex, sort);
+            return View(result);
         }
 
-        public IActionResult Create()
+        public ActionResult Create()
         {
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Empresa Empresa)
+        public ActionResult Create(Empresa empresa)
         {
             if (ModelState.IsValid)
             {
-                await _empresaRepository.AddAsync(Empresa);
+                _repository.empresaRepository.Add(empresa);
+                _repository.Commit();
                 return RedirectToAction(nameof(Index));
             }
-            return View(Empresa);
+            return View(empresa);
         }
 
-        public async Task<IActionResult> Edit(int id)
+        public async Task<ActionResult> Edit(int id)
         {
-            var produto = await _empresaRepository.GetByIdAsync(id);
+            var produto = await _repository.empresaRepository.GetByIdAsync(id);
             if (produto == null) return NotFound();
             return View(produto);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(Empresa Empresa)
+        public ActionResult Edit(Empresa empresa)
         {
             if (ModelState.IsValid)
             {
-                await _empresaRepository.UpdateAsync(Empresa);
+                _repository.empresaRepository.Update(empresa);
+                _repository.Commit();
                 return RedirectToAction(nameof(Index));
             }
-            return View(Empresa);
+            return View(empresa);
         }
 
-        public async Task<IActionResult> Details(int id)
+        public async Task<ActionResult> Details(int id)
         {
-            var result = await _empresaRepository.GetByIdAsync(id);
+            var result = await _repository.empresaRepository.GetByIdAsync(id);
             if (result == null) return NotFound();
             return View(result);
         }
 
-        public async Task<IActionResult> Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            var result = await _empresaRepository.GetByIdAsync(id);
+            var result = await _repository.empresaRepository.GetByIdAsync(id);
             if (result == null) return NotFound();
             return View(result);
         }
 
         [HttpPost, ActionName("Delete")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public ActionResult DeleteConfirmed(int id)
         {
-            await _empresaRepository.DeleteAsync(id);
+            _repository.empresaRepository.Delete(id);
+            _repository.Commit();
             return RedirectToAction(nameof(Index));
         }
     }

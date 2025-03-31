@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SCH.Context;
-using System.Linq.Expressions;
 using static SCH.Repositories.Interfaces.IRepository;
 
 namespace SCH.Repositories;
@@ -24,22 +23,22 @@ public class Repository<T> : IRepository<T> where T : class
         return await _context.Set<T>().FindAsync(id);
     }
 
-    public async Task AddAsync(T entity)
+    public T Add(T entity)
     {
-        await _context.Set<T>().AddAsync(entity);
+        _context.Set<T>().Add(entity);
+        return entity;
     }
 
-    public async Task UpdateAsync(T entity)
+    public T Update(T entity)
     {
         _context.Set<T>().Update(entity);
+        return entity;
     }
 
-    public async Task DeleteAsync(int id)
+    public T Delete(int id)
     {
-        var entity = await _context.Set<T>().FindAsync(id);
-        if (entity != null)
-        {
-            _context.Set<T>().Remove(entity);
-        }
+        var entity = _context.Set<T>().Find(id);
+        _context.Set<T>().Remove(entity);
+        return entity;
     }
 }

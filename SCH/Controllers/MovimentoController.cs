@@ -1,8 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using ReflectionIT.Mvc.Paging;
-using SCH.Context;
 using SCH.Models;
 using SCH.Repositories.Interfaces;
 
@@ -10,92 +6,86 @@ namespace SCH.Controllers
 {
     public class MovimentoController : Controller
     {
-        private readonly AppDbContext _context;
-        private readonly IMovimentoRepository _movimentoRepository;
 
-        public MovimentoController(IMovimentoRepository movimentoRepository, AppDbContext context)
+        private readonly IUnitOfWork _repository;
+
+        public MovimentoController(IUnitOfWork repository)
         {
-            _context = context;
-            _movimentoRepository = movimentoRepository;
+            _repository = repository;
         }
 
-        public async Task<IActionResult> Index(string filter, int pageindex = 1, string sort = "Valor_Hora")
+        private void CarregarViewBag()
         {
-            var resultado = _context.Movimentos.Include(s => s.servico).Include(c => c.cliente).AsQueryable(); 
-
-            if (!string.IsNullOrWhiteSpace(filter))
-            {
-                resultado = resultado.Where(p => p.cliente.NomeCliente.Contains(filter));
-            }
-
-            var model = await PagingList.CreateAsync(resultado, 10, pageindex, sort, "Valor_Hora");
-            model.RouteValue = new RouteValueDictionary { { "filter", filter } };
-            return View(model);
+            ViewBag.ClienteId = _repository.clienteRepository.SelectListClientes();
+            ViewBag.ServicoId = _repository.servicoRepository.SelectListServicos();
         }
 
-        public IActionResult Create()
+        public async Task<ActionResult> Index(string filter, int pageindex = 1, string sort = "Valor_Hora")
         {
-            ViewBag.ClienteId = new SelectList(_context.Clientes, "ClienteId", "NomeCliente");
-            ViewBag.ServicoId = new SelectList(_context.Servicos, "ServicoId", "Descricao");
+            var result = await _repository.movimentoRepository.GetMovimentoPagindo(filter, pageindex, sort);
+            return View(result);
+        }
+
+        public ActionResult Create()
+        {
+            CarregarViewBag();
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Movimento movimento)
+        public ActionResult Create(Movimento movimento)
         {
             if (ModelState.IsValid)
             {
-                await _movimentoRepository.AddAsync(movimento);
+                _repository.movimentoRepository.Add(movimento);
+                _repository.Commit();
                 return RedirectToAction(nameof(Index));
             }
             return View(movimento);
         }
 
-        public async Task<IActionResult> Edit(int id)
+        public async Task<ActionResult> Edit(int id)
         {
-            ViewBag.ClienteId = new SelectList(_context.Clientes, "ClienteId", "NomeCliente");
-            ViewBag.ServicoId = new SelectList(_context.Servicos, "ServicoId", "Descricao");
-
-            var produto = await _movimentoRepository.GetByIdAsync(id);
+            CarregarViewBag();
+            var produto = await _repository.movimentoRepository.GetByIdAsync(id);
             if (produto == null) return NotFound();
             return View(produto);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(Movimento movimento)
+        public ActionResult Edit(Movimento movimento)
         {
             if (ModelState.IsValid)
             {
-                await _movimentoRepository.UpdateAsync(movimento);
+                _repository.movimentoRepository.Update(movimento);
+                _repository.Commit();
                 return RedirectToAction(nameof(Index));
             }
             return View(movimento);
         }
 
-        public async Task<IActionResult> Details(int id)
+        public async Task<ActionResult> Details(int id)
         {
-            ViewBag.ClienteId = new SelectList(_context.Clientes, "ClienteId", "NomeCliente");
-            ViewBag.ServicoId = new SelectList(_context.Servicos, "ServicoId", "Descricao");
+            CarregarViewBag();
 
-            var movimento = await _movimentoRepository.GetMovimentoById(id);
+            var movimento = await _repository.movimentoRepository.GetMovimentoById(id);
             if (movimento == null) return NotFound();
             return View(movimento);
         }
 
-        public async Task<IActionResult> Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            ViewBag.ClienteId = new SelectList(_context.Clientes, "ClienteId", "NomeCliente");
-            ViewBag.ServicoId = new SelectList(_context.Servicos, "ServicoId", "Descricao");
-
-            var result = await _movimentoRepository.GetMovimentoById(id);
+            CarregarViewBag();
+            var result = await _repository.movimentoRepository.GetMovimentoById(id);
             if (result == null) return NotFound();
             return View(result);
         }
 
         [HttpPost, ActionName("Delete")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public ActionResult DeleteConfirmed(int id)
         {
-            await _movimentoRepository.DeleteAsync(id);
+            _repository.movimentoRepository.Delete(id);
+            _repository.Commit();
             return RedirectToAction(nameof(Index));
         }
     }

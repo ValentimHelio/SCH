@@ -1,95 +1,86 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using ReflectionIT.Mvc.Paging;
-using SCH.Context;
 using SCH.Models;
 using SCH.Repositories.Interfaces;
 
-namespace SCH.Controllers
+namespace SCH.Controllers;
+
+public class ServicoController : Controller
 {
-    public class ServicoController : Controller
+    private readonly IUnitOfWork _repository;
+    public ServicoController(IUnitOfWork repository)
     {
-        private readonly AppDbContext _context;
-        private readonly IServicoRepository _servicoRepository;
+        _repository = repository;
+    }
 
-        public ServicoController(IServicoRepository servicoRepository, AppDbContext context)
+    private void CarregarViewBag()
+    {
+        ViewBag.EmpresaId = _repository.empresaRepository.SelectListEmpresas();
+    }
+
+    public async Task<ActionResult> Index(string filter, int pageindex = 1, string sort = "Descricao")
+    {
+        var result = await _repository.servicoRepository.GetServicoPagindo(filter, pageindex, sort);
+        return View(result);
+    }
+
+    public ActionResult Create()
+    {
+        CarregarViewBag();
+        return View();
+    }
+
+    [HttpPost]
+    public ActionResult Create([Bind("Descricao,Tipo,EmpresaId")] Servico servico)
+    {
+        if (ModelState.IsValid)
         {
-            _context = context;
-            _servicoRepository = servicoRepository;
-        }
-
-        public async Task<IActionResult> Index(string filter, int pageindex = 1, string sort = "Descricao")
-        {
-            var resultado = _context.Servicos.Include(e => e.empresa).AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(filter))
-            {
-                resultado = resultado.Where(p => p.Descricao.Contains(filter));
-            }
-
-            var model = await PagingList.CreateAsync(resultado, 10, pageindex, sort, "Descricao");
-            model.RouteValue = new RouteValueDictionary { { "filter", filter } };
-            return View(model);
-
-        }
-
-        public IActionResult Create()
-        {
-            ViewBag.EmpresaId = new SelectList(_context.Empresas, "EmpresaId", "NomeEmpresa");
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Create([Bind("Descricao,Tipo,EmpresaId")] Servico servico)
-        {
-            if (ModelState.IsValid)
-            {
-                await _servicoRepository.AddAsync(servico);
-                return RedirectToAction(nameof(Index));
-            }
-            return View(servico);
-        }
-
-        public async Task<IActionResult> Edit(int id)
-        {
-            ViewBag.EmpresaId = new SelectList(_context.Empresas, "EmpresaId", "NomeEmpresa");
-            var servico = await _servicoRepository.GetByIdAsync(id);
-            if (servico == null) return NotFound();
-            return View(servico);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Edit(Servico servico)
-        {
-            if (ModelState.IsValid)
-            {
-                await _servicoRepository.UpdateAsync(servico);
-                return RedirectToAction(nameof(Index));
-            }
-            return View(servico);
-        }
-
-        public async Task<IActionResult> Details(int id)
-        {
-            ViewBag.EmpresaId = new SelectList(_context.Empresas, "EmpresaId", "NomeEmpresa");
-            var servico = await _servicoRepository.GetServicoById(id);
-            if (servico == null) return NotFound();
-            return View(servico);
-        }
-
-        public async Task<IActionResult> Delete(int id)
-        {
-            var produto = await _servicoRepository.GetServicoById(id);
-            if (produto == null) return NotFound();
-            return View(produto);
-        }
-
-        [HttpPost, ActionName("Delete")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            await _servicoRepository.DeleteAsync(id);
+            _repository.servicoRepository.Add(servico);
+            _repository.Commit();
             return RedirectToAction(nameof(Index));
         }
+        return View(servico);
+    }
+
+    public async Task<IActionResult> Edit(int id)
+    {
+        CarregarViewBag();
+        var servico = await _repository.servicoRepository.GetByIdAsync(id);
+        if (servico == null) return NotFound();
+        return View(servico);
+    }
+
+    [HttpPost]
+    public ActionResult Edit(Servico servico)
+    {
+        if (ModelState.IsValid)
+        {
+            _repository.servicoRepository.Update(servico);
+            _repository.Commit();
+            return RedirectToAction(nameof(Index));
+        }
+        return View(servico);
+    }
+
+    public async Task<IActionResult> Details(int id)
+    {
+        CarregarViewBag();
+        var servico = await _repository.servicoRepository.GetServicoById(id);
+        if (servico == null) return NotFound();
+        return View(servico);
+    }
+
+    public async Task<ActionResult> Delete(int id)
+    {
+        var produto = await _repository.servicoRepository.GetServicoById(id);
+        if (produto == null) return NotFound();
+        return View(produto);
+    }
+
+    [HttpPost, ActionName("Delete")]
+    public ActionResult DeleteConfirmed(int id)
+    {
+        _repository.servicoRepository.Delete(id);
+        _repository.Commit();
+        return RedirectToAction(nameof(Index));
     }
 }
