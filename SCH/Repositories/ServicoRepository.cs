@@ -30,7 +30,7 @@ public class ServicoRepository : Repository<Servico>, IServicoRepository
 
     public async Task<PagingList<Servico>> GetServicoPagindo(string filter, int pageindex, string sort)
     {
-        var resultado = _context.Servicos.AsQueryable();
+        var resultado = _context.Servicos.Include(e => e.empresa).AsQueryable();
         if (!string.IsNullOrWhiteSpace(filter))
         {
             resultado = resultado.Where(p => p.Descricao.Contains(filter));
