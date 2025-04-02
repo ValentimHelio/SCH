@@ -3,6 +3,7 @@ using ReflectionIT.Mvc.Paging;
 using SCH.Context;
 using SCH.Repositories;
 using SCH.Repositories.Interfaces;
+using SCH.Services;
 using static SCH.Repositories.Interfaces.IRepository;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,7 @@ builder.Services.AddTransient<IClienteRepository, ClienteRepository>();
 builder.Services.AddTransient<IEmpresaRepository, EmpresaRepository>();
 builder.Services.AddTransient<IMovimentoRepository, MovimentoRepository>();
 builder.Services.AddTransient<IServicoRepository, ServicoRepository>();
+builder.Services.AddTransient<RelatorioServices>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

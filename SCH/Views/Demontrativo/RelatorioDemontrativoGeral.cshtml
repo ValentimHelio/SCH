@@ -1,0 +1,56 @@
+﻿@model IEnumerable<RelatorioDemonstrativoViewModel>
+
+<h1>Planilha - Demonstrativo</h1>
+<h5>Período: @ViewData["minDate"] à @ViewData["maxDate"]</h5>
+
+<table class="table table-striped">
+    <thead>
+        <tr class="table-success">
+            <th>@Html.DisplayNameFor(model => model.NomeCliente)</th>
+            <th>@Html.DisplayNameFor(model => model.GPS_INSS)</th>
+            <th>@Html.DisplayNameFor(model => model.GPS_Autonomo)</th>
+            <th>@Html.DisplayNameFor(model => model.Domestica)</th>
+            <th>@Html.DisplayNameFor(model => model.FGTS)</th>
+            <th>@Html.DisplayNameFor(model => model.CONTR_CONF)</th>
+            <th>@Html.DisplayNameFor(model => model.CNA_CCIR_SEG)</th>
+            <th>@Html.DisplayNameFor(model => model.SST_ESOCIAL)</th>
+            <th>@Html.DisplayNameFor(model => model.IRPF)</th>
+            <th>@Html.DisplayNameFor(model => model.GTA_ISSQN_CA)</th>
+            <th>@Html.DisplayNameFor(model => model.XEROX_FIRMA)</th>
+            <th>@Html.DisplayNameFor(model => model.ITR_PIS_FUNR)</th>
+            <th>@Html.DisplayNameFor(model => model.MENSALIDADE)</th>
+            <th><strong>Total</strong></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.NomeCliente)</td>
+                <td>@FormatarValor(item.GPS_INSS)</td>
+                <td>@FormatarValor(item.GPS_Autonomo)</td>
+                <td>@FormatarValor(item.Domestica)</td>
+                <td>@FormatarValor(item.FGTS)</td>
+                <td>@FormatarValor(item.CONTR_CONF)</td>
+                <td>@FormatarValor(item.CNA_CCIR_SEG)</td>
+                <td>@FormatarValor(item.SST_ESOCIAL)</td>
+                <td>@FormatarValor(item.IRPF)</td>
+                <td>@FormatarValor(item.GTA_ISSQN_CA)</td>
+                <td>@FormatarValor(item.XEROX_FIRMA)</td>
+                <td>@FormatarValor(item.ITR_PIS_FUNR)</td>
+                <td>@FormatarValor(item.MENSALIDADE)</td>
+                <td>@FormatarValor(item.Total)</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@functions {
+    public string FormatarValor(decimal? valor)
+    {
+        return valor.HasValue && valor.Value != 0
+            ? valor.Value.ToString("C", new System.Globalization.CultureInfo("pt-BR"))
+            : "-";
+    }
+}
